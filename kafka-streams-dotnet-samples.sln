@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "map-function", "src\map-function\map-function.csproj", "{CBC3D3F9-106E-44A8-918B-7D487B3D1AF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sum", "sum\sum.csproj", "{4D403671-66B0-4F5A-972F-419F56FDC368}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sum", "src\sum\sum.csproj", "{4D403671-66B0-4F5A-972F-419F56FDC368}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
