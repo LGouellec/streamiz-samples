@@ -43,20 +43,28 @@ if [ -d "./src/${EXAMPLE}" ]; then
     config_file="./src/${EXAMPLE}/config-example.properties"
     override_docker=
     artifacts=
+    runnable=true
+    root_directory=`pwd`
 
     if [ -f "${config_file}" ]; then
         override_docker=$(prop ${config_file} 'override.docker')
         artifacts=$(prop ${config_file} 'artifacts')
+        runnable_tmp=$(prop ${config_file} 'runnable')
+        if [ ! -z "$runnable_tmp" ]; then
+          runnable=$runnable_tmp
+        fi
     fi
 
     echo "${yellow}OVERRIDE DOCKER           = ${override_docker}${reset}"
     echo "${yellow}ARTIFACTS                 = ${artifacts}${reset}"
+    echo "${yellow}RUNNABLE                  = ${runnable}${reset}"
 
     echo "${red}Stop and remove all docker container existing${reset}"
     docker rm -f $(docker ps -aq) > /dev/null 2>&1
 
     if [ "$override_docker" = "true" ]; then
-        docker-compose -f "./src/${EXAMPLE}/docker-compose.yml" up -d
+        docker-compose -f "./src/${EXAMPLE}/docker-compose.override.yml" -f "./environment/docker-compose.yml" build
+        docker-compose -f "./environment/docker-compose.yml" -f "./src/${EXAMPLE}/docker-compose.override.yml" up -d
     else
         docker-compose -f "./environment/docker-compose.yml" up -d
     fi
@@ -92,8 +100,6 @@ if [ -d "./src/${EXAMPLE}" ]; then
         fi
     done
 
-    # while read line; do echo $line; done < "./src/${EXAMPLE}/$artifacts"
-
     if [ "./src/${EXAMPLE}/$artifacts" != "" ]; then
       
       while IFS= read -r line; do
@@ -107,7 +113,7 @@ if [ -d "./src/${EXAMPLE}" ]; then
     echo "${reset}${yellow}List all topics ..."
     docker exec -i ${kafkaContainerId} kafka-topics --bootstrap-server broker:29092 --list
 
-    if [ "$RUN" = "true" ]; then
+    if [ "$RUN" = "true" ] && [ "$runnable" = "true" ]; then
         echo "${red}🚀 Run ${EXAMPLE} projects 🚀 ${reset}"
         dotnet restore "./src/${EXAMPLE}/${EXAMPLE}.csproj"
         dotnet build --no-restore "./src/${EXAMPLE}/${EXAMPLE}.csproj"

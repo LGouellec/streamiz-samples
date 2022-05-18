@@ -1,0 +1,29 @@
+---
+version: '3.5'
+services:
+  prometheus:
+    image: prom/prometheus:v2.35.0
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./assets/prometheus/:/etc/prometheus
+  grafana:
+    image: grafana/grafana:8.5.2
+    container_name: grafana
+    environment:
+      - "GF_SECURITY_ADMIN_USER=admin"
+      - "GF_SECURITY_ADMIN_PASSWORD=password"
+      - "GF_USERS_ALLOW_SIGN_UP=false"
+    ports:
+      - 3000:3000
+    volumes:
+      - ./assets/grafana/provisioning/:/etc/grafana/provisioning
+  streamiz-app:
+    build: .
+    image: streamiz-app-example
+    container_name: streamiz-app
+    environment:
+      KAFKA_BOOTSTRAP_SERVER: broker:29092
+    depends_on:
+      - broker

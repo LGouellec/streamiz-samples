@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "page-view-region", "src\pag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "global-ktable", "src\global-ktable\global-ktable.csproj", "{4CC3E036-1A0B-40E1-9C2C-B543E86A60E5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "monitoring", "src\monitoring\monitoring.csproj", "{C46A75BD-8B8D-46C8-BD1F-F9A221D72443}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{4CC3E036-1A0B-40E1-9C2C-B543E86A60E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CC3E036-1A0B-40E1-9C2C-B543E86A60E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CC3E036-1A0B-40E1-9C2C-B543E86A60E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C46A75BD-8B8D-46C8-BD1F-F9A221D72443}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C46A75BD-8B8D-46C8-BD1F-F9A221D72443}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C46A75BD-8B8D-46C8-BD1F-F9A221D72443}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C46A75BD-8B8D-46C8-BD1F-F9A221D72443}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
