@@ -18,7 +18,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./assets/grafana/provisioning/:/etc/grafana/provisioning
+      - ../src/monitoring/assets/grafana/provisioning/:/etc/grafana/provisioning
   streamiz-app:
     build: .
     image: streamiz-app-example

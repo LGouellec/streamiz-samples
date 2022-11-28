@@ -10,7 +10,6 @@ function prop() {
 }
 
 POSITIONAL_ARGS=()
-RUN=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -18,10 +17,6 @@ while [[ $# -gt 0 ]]; do
       EXAMPLE="$2"
       shift # past argument
       shift # past value
-      ;;
-    --run)
-      RUN=true
-      shift # past argument
       ;;
     -*|--*)
       echo "Unknown option $1"
@@ -37,34 +32,29 @@ done
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
 echo "${yellow}EXAMPLE                   = ${EXAMPLE}${reset}"
-echo "${yellow}RUN DOTNET SAMPLE         = ${RUN}${reset}"
 
 if [ -d "./src/${EXAMPLE}" ]; then
     config_file="./src/${EXAMPLE}/config-example.properties"
     override_docker=
     artifacts=
-    runnable=true
     root_directory=`pwd`
+    result=
 
     if [ -f "${config_file}" ]; then
         override_docker=$(prop ${config_file} 'override.docker')
         artifacts=$(prop ${config_file} 'artifacts')
-        runnable_tmp=$(prop ${config_file} 'runnable')
-        if [ ! -z "$runnable_tmp" ]; then
-          runnable=$runnable_tmp
-        fi
+        result=$(prop ${config_file} 'result')
     fi
 
     echo "${yellow}OVERRIDE DOCKER           = ${override_docker}${reset}"
     echo "${yellow}ARTIFACTS                 = ${artifacts}${reset}"
-    echo "${yellow}RUNNABLE                  = ${runnable}${reset}"
 
     echo "${red}Stop and remove all docker container existing${reset}"
     docker rm -f $(docker ps -aq) > /dev/null 2>&1
 
     if [ "$override_docker" = "true" ]; then
-        docker-compose -f "./src/${EXAMPLE}/docker-compose.override.yml" -f "./environment/docker-compose.yml" build
-        docker-compose -f "./environment/docker-compose.yml" -f "./src/${EXAMPLE}/docker-compose.override.yml" up -d
+        docker-compose -f "./environment/docker-compose.yml" -f "./src/${EXAMPLE}/docker-compose.override.yml" build
+        docker-compose -f "./environment/docker-compose.yml" -f "./src/${EXAMPLE}/docker-compose.override.yml" up -d zookeeper broker schema-registry akhq
     else
         docker-compose -f "./environment/docker-compose.yml" up -d
     fi
@@ -112,14 +102,23 @@ if [ -d "./src/${EXAMPLE}" ]; then
 
     echo "${reset}${yellow}List all topics ..."
     docker exec -i ${kafkaContainerId} kafka-topics --bootstrap-server broker:29092 --list
-
-    if [ "$RUN" = "true" ] && [ "$runnable" = "true" ]; then
-        echo "${red}🚀 Run ${EXAMPLE} projects 🚀 ${reset}"
-        dotnet restore "./src/${EXAMPLE}/${EXAMPLE}.csproj"
-        dotnet build --no-restore "./src/${EXAMPLE}/${EXAMPLE}.csproj"
-        dotnet run --no-restore --no-build --project "./src/${EXAMPLE}/${EXAMPLE}.csproj"
+    
+    if [ "$override_docker" = "true" ]; then
+        echo "${green}Start the rest of the stack ... ${reset}"
+        docker-compose -f "./environment/docker-compose.yml" -f "./src/${EXAMPLE}/docker-compose.override.yml" up -d
     fi
-    echo "${reset}"
+
+    echo "${red}🚨 Example is READY .. Produce message into the source topic 💥 ${reset}"
+
+    # Consume output topic for results
+    if [ "./src/${EXAMPLE}/$result" != "" ]; then
+      output_config_file="./src/${EXAMPLE}/$result"
+      sink_topic=$(prop ${output_config_file} 'topic')
+      key_ser=$(prop ${output_config_file} 'key_deserializer')
+      value_ser=$(prop ${output_config_file} 'value_deserializer')
+      docker exec -it ${kafkaContainerId} kafka-console-consumer --bootstrap-server broker:29092 --topic ${sink_topic} --from-beginning --property print.key=true --property key.separator=" : " --key-deserializer ${key_ser} --value-deserializer ${value_ser}
+    fi
+
 else
     echo "${red}🚨 Example is not present in this repository${reset}"
 fi

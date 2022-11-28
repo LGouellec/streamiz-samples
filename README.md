@@ -27,3 +27,19 @@ if (run .net){
     dotnet build
     dotnet run ...
 }
+
+
+# EXAMPE MAP FUNCTION
+seq -f "key:value%g" 10 | docker exec -i broker kafka-console-producer --bootstrap-server broker:29092 --topic text-lines-topic --property parse.key=true --property key.separator=:
+
+EXPECTED
+key : VALUE1
+key : VALUE2
+key : VALUE3
+key : VALUE4
+key : VALUE5
+key : VALUE6
+key : VALUE7
+key : VALUE8
+key : VALUE9
+key : VALUE10

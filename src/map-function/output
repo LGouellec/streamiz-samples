@@ -1,0 +1,3 @@
+topic=uppercased-text-lines-topic
+key_deserializer=org.apache.kafka.common.serialization.StringDeserializer
+value_deserializer=org.apache.kafka.common.serialization.StringDeserializer

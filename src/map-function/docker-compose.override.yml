@@ -1,0 +1,11 @@
+---
+version: '3.5'
+services:
+  map-steamiz-app:
+    build: ../src/map-function/
+    container_name: map-streamiz
+    hostname: map-streamiz
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=broker:29092
+    depends_on:
+      - broker

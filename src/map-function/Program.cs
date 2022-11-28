@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Streamiz.Kafka.Net;
+﻿using Streamiz.Kafka.Net;
 using Streamiz.Kafka.Net.SerDes;
 using Streamiz.Kafka.Net.Stream;
 
@@ -10,10 +6,16 @@ namespace map_function
 {
     public static class Program
     {
+        static string GetEnvironmentVariable(string var, string @default)
+        {
+            return Environment.GetEnvironmentVariable(var) ?? @default;
+        }
+        
         static async Task Main(string[] args)
         {
             CancellationTokenSource source = new CancellationTokenSource();
-            string boostrapserver = args.Length > 0 ? args[0] : "localhost:9092";
+            string boostrapserver = GetEnvironmentVariable("KAFKA_BOOTSTRAP_SERVER", "localhost:9092");
+
             var config = new StreamConfig<ByteArraySerDes, StringSerDes>();
             // Give the Streams application a unique name.  The name must be unique in the Kafka cluster
             // against which the application is run.
