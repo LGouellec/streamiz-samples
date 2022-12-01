@@ -1,0 +1,12 @@
+---
+version: '3.5'
+services:
+  page-view-region-steamiz-app:
+    build: ../src/page-view-region/
+    container_name: page-view-region-steamiz
+    hostname: page-view-region-steamiz
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=broker:29092
+      - KAFKA_SCHEMA_REGISTRY_URL=http://schema-registry:8081
+    depends_on:
+      - broker

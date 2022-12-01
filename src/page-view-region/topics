@@ -1,7 +1,3 @@
 page-views:3
 page-views-by-region:3
 user-profiles:3
-pageview-region-lambda-example-KSTREAM-AGGREGATE-STATE-STORE-0000000011-changelog:3
-pageview-region-lambda-example-KSTREAM-AGGREGATE-STATE-STORE-0000000011-repartition:3
-pageview-region-lambda-example-KSTREAM-KEY-SELECT-0000000001-repartition:3
-pageview-region-lambda-example-user-profiles-store-changelog:3

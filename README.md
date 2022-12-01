@@ -93,3 +93,11 @@ EXPECTED (Order can differed)
 2 : {"productName":"iPhone 10","productId":1,"customerName":"Customer 1","customerId":1,"orderId":2}
 3 : {"productName":"iPhone 10","productId":1,"customerName":"Customer 1","customerId":1,"orderId":3}
 1 : {"productName":"iPhone 10","productId":1,"customerName":"Customer 1","customerId":1,"orderId":1
+
+# EXAMPE PAGE-VIEW-REGION
+
+Customer
+echo "User1|{\"user\": \"User1\", \"region\": \"usa-central\"}\nUser2|{\"user\": \"User2\", \"region\": \"usa-west\"}\nUser3|{\"user\": \"User3\", \"region\": \"france\"}" | docker exec -i schema-registry kafka-avro-console-producer --bootstrap-server broker:29092 --property schema.registry.url=http://localhost:8081 --topic user-profiles --property value.schema='{"type":"record","name":"UserProfile","namespace":"com.dotnet.samples.avro","fields":[{"name":"user","type":"string"},{"name":"region","type":"string"}]}' --property parse.key=true --property key.separator=\| --property key.serializer=org.apache.kafka.common.serialization.StringSerializer
+
+Publish an page view
+echo "User1|{\"user\": \"User1\", \"url\": \"https://www.google.com\"}\nUser2|{\"user\": \"User2\", \"url\": \"https://www.amazon.com\"}\nUser3|{\"user\": \"User3\", \"url\": \"https://www.myshop.com\"}" | docker exec -i schema-registry kafka-avro-console-producer --bootstrap-server broker:29092 --property schema.registry.url=http://localhost:8081 --topic page-views --property value.schema='{"type":"record","name":"PageView","namespace":"com.dotnet.samples.avro","fields":[{"name":"user","type":"string"},{"name":"url","type":"string"}]}' --property parse.key=true --property key.separator=\| --property key.serializer=org.apache.kafka.common.serialization.StringSerializer
