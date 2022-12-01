@@ -13,10 +13,16 @@ namespace sum
         static readonly String SUM_OF_ODD_NUMBERS_TOPIC = "sum-of-odd-numbers-topic";
         static readonly String NUMBERS_TOPIC = "numbers-topic";
 
+        static string GetEnvironmentVariable(string var, string @default)
+        {
+            return Environment.GetEnvironmentVariable(var) ?? @default;
+        }
+
         static async Task Main(string[] args)
         {
             CancellationTokenSource source = new CancellationTokenSource();
-            string boostrapserver = args.Length > 0 ? args[0] : "localhost:9092";
+            string boostrapserver = GetEnvironmentVariable("KAFKA_BOOTSTRAP_SERVER", "localhost:9092");
+
             var config = new StreamConfig<Int32SerDes, Int32SerDes>();
             // Give the Streams application a unique name.  The name must be unique in the Kafka cluster
             // against which the application is run.
@@ -44,11 +50,10 @@ namespace sum
             // We don't really care about the keys of the input records;  for simplicity, we assume them
             // to be Integers, too, because we will re-key the stream later on, and the new key will be
             // of type Integer.
-            IKStream<byte[], int> input = builder.Stream<byte[], int, ByteArraySerDes, Int32SerDes>(NUMBERS_TOPIC);
+            IKStream<byte[], string> input = builder.Stream<byte[], string, ByteArraySerDes, StringSerDes>(NUMBERS_TOPIC);
 
             IKTable<int, int> sumOfOddNumbers = input
-             // We are only interested in odd numbers.
-             .Filter((k, v) =>v % 2 != 0)
+             .MapValues((v) => Int32.Parse(v))
              // We want to compute the total sum across ALL numbers, so we must re-key all records to the
              // same key.  This re-keying is required because in Kafka Streams a data record is always a
              // key-value pair, and KStream aggregations such as `reduce` operate on a per-key basis.
@@ -60,7 +65,10 @@ namespace sum
              // Add the numbers to compute the sum.
              .Reduce((v1, v2) => v1 + v2);
 
-            sumOfOddNumbers.ToStream().To(SUM_OF_ODD_NUMBERS_TOPIC);
+            sumOfOddNumbers
+                .ToStream()
+                .Map((k, v) => KeyValuePair.Create(k.ToString(), v.ToString()))
+                .To<StringSerDes, StringSerDes>(SUM_OF_ODD_NUMBERS_TOPIC);
 
             return builder.Build();
         }

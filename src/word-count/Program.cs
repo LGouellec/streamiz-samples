@@ -13,10 +13,16 @@ namespace word_count
         static readonly String inputTopic = "plaintext-input";
         static readonly String outputTopic = "wordcount-output";
 
+        static string GetEnvironmentVariable(string var, string @default)
+        {
+            return Environment.GetEnvironmentVariable(var) ?? @default;
+        }
+
         static async Task Main(string[] args)
         {
             CancellationTokenSource source = new CancellationTokenSource();
-            string boostrapserver = args.Length > 0 ? args[0] : "localhost:9092";
+            string boostrapserver = GetEnvironmentVariable("KAFKA_BOOTSTRAP_SERVER", "localhost:9092");
+            
             var config = new StreamConfig<StringSerDes, StringSerDes>();
             // Give the Streams application a unique name.  The name must be unique in the Kafka cluster
             // against which the application is run.
@@ -60,7 +66,9 @@ namespace word_count
               .Count();
 
             // Write the `KTable<String, Long>` to the output topic.
-            wordCounts.ToStream().To<StringSerDes, Int64SerDes>(outputTopic);
+            wordCounts.ToStream()
+                .MapValues((t) => t.ToString())
+                .To(outputTopic);
 
             return builder.Build();
         }

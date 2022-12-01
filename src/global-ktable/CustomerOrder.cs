@@ -1,9 +1,6 @@
 ﻿using com.dotnet.samples.avro;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace GlobalKTable
+namespace global_ktable
 {
     internal class CustomerOrder
     {

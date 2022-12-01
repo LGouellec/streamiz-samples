@@ -43,3 +43,53 @@ key : VALUE7
 key : VALUE8
 key : VALUE9
 key : VALUE10
+
+
+# EXAMPLE WORD COUNT 
+
+for i in {1..10}; do echo key:value;done | docker exec -i broker kafka-console-producer --bootstrap-server broker:29092 --topic plaintext-input --property parse.key=true --property key.separator=:
+
+EXPECTED
+value : 1
+value : 2
+value : 3
+value : 4
+value : 5
+value : 6
+value : 7
+value : 8
+value : 9
+value : 10
+
+# EXAMPLE SUM
+
+seq -f "%g" 10 | docker exec -i broker kafka-console-producer --bootstrap-server broker:29092 --topic numbers-topic --property parse.key=false
+
+EXPECTED : 
+1 : 1
+1 : 3
+1 : 6
+1 : 10
+1 : 15
+1 : 21
+1 : 28
+1 : 36
+1 : 45
+1 : 55
+
+# EXAMPE GLOBAL-KTABLE
+
+Product
+seq -f "1|{\"name\": \"iPhone %g\", \"id\": 1}" 10 10 | docker exec -i schema-registry kafka-avro-console-producer --bootstrap-server broker:29092 --property schema.registry.url=http://localhost:8081 --topic product --property value.schema='{"type":"record","name":"Product","namespace":"com.dotnet.samples.avro","fields":[{"name":"id","type":"int"},{"name":"name","type":"string"}]}' --property parse.key=true --property key.separator=\| --property key.serializer=org.apache.kafka.common.serialization.StringSerializer
+
+Customer
+seq -f "1|{\"name\": \"Customer %g\", \"id\": 1}" 1 1 | docker exec -i schema-registry kafka-avro-console-producer --bootstrap-server broker:29092 --property schema.registry.url=http://localhost:8081 --topic customer --property value.schema='{"type":"record","name":"Customer","namespace":"com.dotnet.samples.avro","fields":[{"name":"id","type":"int"},{"name":"name","type":"string"}]}' --property parse.key=true --property key.separator=\| --property key.serializer=org.apache.kafka.common.serialization.StringSerializer
+
+Publish an order
+for i in {1..3}; do echo "${i}|{\"productId\": 1, \"id\": ${i}, \"customerId\": 1}";done | docker exec -i schema-registry kafka-avro-console-producer --bootstrap-server broker:29092 --property schema.registry.url=http://localhost:8081 --topic order --property value.schema='{"type":"record","name":"Order","namespace":"com.dotnet.samples.avro","fields":[{"name":"id","type":"int"},{"name":"customerId","type":"int"},{"name":"productId","type":"int"}]}' --property parse.key=true --property key.separator=\| --property key.serializer=org.apache.kafka.common.serialization.StringSerializer
+
+
+EXPECTED (Order can differed)
+2 : {"productName":"iPhone 10","productId":1,"customerName":"Customer 1","customerId":1,"orderId":2}
+3 : {"productName":"iPhone 10","productId":1,"customerName":"Customer 1","customerId":1,"orderId":3}
+1 : {"productName":"iPhone 10","productId":1,"customerName":"Customer 1","customerId":1,"orderId":1

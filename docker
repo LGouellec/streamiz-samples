@@ -1,1 +1,0 @@
-exec broker kafka-console-producer --bootstrap-server broker:29092 --topic uppercased-text-lines-topic --property parse.key=true --property key.separator=:
