@@ -101,3 +101,31 @@ echo "User1|{\"user\": \"User1\", \"region\": \"usa-central\"}\nUser2|{\"user\":
 
 Publish an page view
 echo "User1|{\"user\": \"User1\", \"url\": \"https://www.google.com\"}\nUser2|{\"user\": \"User2\", \"url\": \"https://www.amazon.com\"}\nUser3|{\"user\": \"User3\", \"url\": \"https://www.myshop.com\"}" | docker exec -i schema-registry kafka-avro-console-producer --bootstrap-server broker:29092 --property schema.registry.url=http://localhost:8081 --topic page-views --property value.schema='{"type":"record","name":"PageView","namespace":"com.dotnet.samples.avro","fields":[{"name":"user","type":"string"},{"name":"url","type":"string"}]}' --property parse.key=true --property key.separator=\| --property key.serializer=org.apache.kafka.common.serialization.StringSerializer
+
+EXPECTED (Order and time can differed)
+Key : france
+Window : Start time : 12/07/2022 08:40:00 | End time : 12/07/2022 08:45:00
+ : 1
+Key : usa-central
+Window : Start time : 12/07/2022 08:40:00 | End time : 12/07/2022 08:45:00
+ : 1
+Key : usa-west
+Window : Start time : 12/07/2022 08:40:00 | End time : 12/07/2022 08:45:00
+ : 1
+
+# EXAMPLE MONITORING
+
+curl -s -X PUT \
+      -H "Content-Type: application/json" \
+      --data '{
+                "connector.class": "io.confluent.kafka.connect.datagen.DatagenConnector",
+                "kafka.topic": "input",
+                "quickstart": "pageviews",
+                "tasks.max": "1",
+                "transforms": "ValueToKey,ExtractField",
+                "transforms.ValueToKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
+                "transforms.ValueToKey.fields": "userid",
+                "transforms.ExtractField.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+                "transforms.ExtractField.field": "userid"
+            }' \
+      http://localhost:8083/connectors/datagen-pageviews/config | jq

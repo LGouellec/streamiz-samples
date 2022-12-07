@@ -90,6 +90,13 @@ if [ -d "./src/${EXAMPLE}" ]; then
         fi
     done
 
+    # Wait SR is UP
+    echo "${green}Waiting schema registry ...${reset}"
+    while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' localhost:8081)" != "200" ]]; 
+    do
+      sleep 1;
+    done
+
     if [ "./src/${EXAMPLE}/$artifacts" != "" ]; then
       
       while IFS= read -r line; do
@@ -101,7 +108,7 @@ if [ -d "./src/${EXAMPLE}" ]; then
     fi
 
     echo "${reset}${yellow}List all topics ..."
-    docker exec -i ${kafkaContainerId} kafka-topics --bootstrap-server broker:29092 --list
+    docker exec -i ${kafkaContainerId} kafka-topics --bootstrap-server broker:29092 --list --exclude-internal
     
     if [ "$override_docker" = "true" ]; then
         echo "${green}Start the rest of the stack ... ${reset}"
@@ -111,8 +118,8 @@ if [ -d "./src/${EXAMPLE}" ]; then
     echo "${red}🚨 Example is READY .. Produce message into the source topic 💥 ${reset}"
 
     # Consume output topic for results
-    if [ "./src/${EXAMPLE}/$result" != "" ]; then
-      output_config_file="./src/${EXAMPLE}/$result"
+    if [ "${result}" != "" ]; then
+      output_config_file="./src/${EXAMPLE}/${result}"
       sink_topic=$(prop ${output_config_file} 'topic')
       key_ser=$(prop ${output_config_file} 'key_deserializer')
       value_ser=$(prop ${output_config_file} 'value_deserializer')

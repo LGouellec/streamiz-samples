@@ -40,7 +40,8 @@ namespace monitoring
             // Where to find Kafka broker(s).
             config.BootstrapServers = boostrapserver;
             config.CommitIntervalMs = 10 * 1000;
-            config.UsePrometheusReporter(9090, true);
+            config.UsePrometheusReporter(9099, true);
+            config.MetricsRecording = Streamiz.Kafka.Net.Metrics.MetricsRecordingLevel.DEBUG;
 
             Topology t = GetTopology();
             KafkaStream stream = new(t, config);

@@ -19,9 +19,9 @@ scrape_configs:
   - job_name: "streamiz-demo"
     static_configs:
       - targets:
-          - "streamiz-app:9090"
+          - "streamiz-app:9099"
         labels:
-          env: "dev"
+          env: "prd"
     relabel_configs:
       - source_labels: [__address__]
         target_label: hostname

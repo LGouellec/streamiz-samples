@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using com.dotnet.samples.avro;
+using Confluent.Kafka;
 using Streamiz.Kafka.Net;
 using Streamiz.Kafka.Net.SchemaRegistry.SerDes.Avro;
 using Streamiz.Kafka.Net.SerDes;
@@ -39,6 +40,7 @@ namespace page_view_region
             config.AutoOffsetReset = Confluent.Kafka.AutoOffsetReset.Earliest;
             config.SchemaRegistryUrl = schemaRegistryUrl;
             config.AutoRegisterSchemas = true;
+            config.Partitioner = Partitioner.Murmur2Random;
 
             var t = GetTopology();
 
@@ -74,10 +76,10 @@ namespace page_view_region
                     region = region
                 })
                 .Map((user, viewRegion) => KeyValuePair.Create(viewRegion.region, viewRegion))
-                .GroupByKey()
-                .WindowedBy(HoppingWindowOptions.Of(TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(1)))
+                .GroupByKey<StringSerDes, JsonSerDes<ViewRegion>>()
+                .WindowedBy(TumblingWindowOptions.Of(TimeSpan.FromMinutes(5)))
                 .Count();
-
+            
             viewsByRegion
                 .ToStream()
                 .Map((w, c) => KeyValuePair.Create(w.ToString(), c.ToString()))
