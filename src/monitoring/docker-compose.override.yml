@@ -18,7 +18,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ../src/monitoring/assets/grafana/provisioning/:/etc/grafana/provisioning
+      - ../src/monitoring/assets/grafana/provisioning/:/etc/grafana/provisioning:rw
   streamiz-app:
     build: ../src/monitoring/
     container_name: streamiz-app

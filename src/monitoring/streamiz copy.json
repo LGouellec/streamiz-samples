@@ -123,7 +123,10 @@
       },
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "editorMode": "code",
           "expr": "stream_state_metrics_fetch_latency_avg{thread_id=\"$streamiz_thread_id\"}",
           "interval": "",
@@ -203,7 +206,10 @@
       },
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "editorMode": "code",
           "expr": "stream_state_metrics_fetch_latency_max{thread_id=\"$streamiz_thread_id\"}",
           "legendFormat": "{{rocksdb_window_state_id}}{{in_memory_window_state_id}}",
@@ -281,7 +287,10 @@
       },
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "editorMode": "code",
           "expr": "stream_state_metrics_fetch_rate{thread_id=\"$streamiz_thread_id\"}",
           "legendFormat": "{{rocksdb_window_state_id}}{{in_memory_window_state_id}}",
@@ -360,7 +369,10 @@
       },
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "editorMode": "code",
           "expr": "stream_state_metrics_put_latency_avg{thread_id=\"$streamiz_thread_id\"}",
           "legendFormat": "{{rocksdb_window_state_id}}{{in_memory_window_state_id}}",
@@ -439,7 +451,10 @@
       },
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "editorMode": "code",
           "expr": "stream_state_metrics_put_latency_max{thread_id=\"$streamiz_thread_id\"}",
           "legendFormat": "{{rocksdb_window_state_id}}{{in_memory_window_state_id}}",
@@ -517,7 +532,10 @@
       },
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "editorMode": "code",
           "expr": "stream_state_metrics_put_rate{thread_id=\"$streamiz_thread_id\"}",
           "legendFormat": "{{rocksdb_window_state_id}}{{in_memory_window_state_id}}",
@@ -595,7 +613,10 @@
       },
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "editorMode": "code",
           "expr": "stream_state_metrics_flush_latency_avg{thread_id=\"$streamiz_thread_id\"}",
           "legendFormat": "{{rocksdb_window_state_id}}{{in_memory_window_state_id}}",
@@ -673,7 +694,10 @@
       },
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "editorMode": "code",
           "expr": "stream_state_metrics_flush_latency_max{thread_id=\"$streamiz_thread_id\"}",
           "legendFormat": "{{rocksdb_window_state_id}}{{in_memory_window_state_id}}",
@@ -750,7 +774,10 @@
       },
       "targets": [
         {
-          "datasource": null,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "editorMode": "code",
           "expr": "stream_state_metrics_flush_rate{thread_id=\"$streamiz_thread_id\"}",
           "legendFormat": "{{rocksdb_window_state_id}}{{in_memory_window_state_id}}",
@@ -1724,7 +1751,10 @@
           "type": "stat"
         },
         {
-          "datasource": null,
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
           "fieldConfig": {
             "defaults": {
               "color": {

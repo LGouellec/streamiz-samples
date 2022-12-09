@@ -10,12 +10,8 @@ WORKDIR "/src/monitoring"
 RUN dotnet build "monitoring.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "monitoring.csproj" -c Release -o /app/publish
-
-FROM base AS final
 ARG ROCKSDB_VERSION=v7.4.3
-WORKDIR /app
 RUN apk add --no-cache rocksdb libstdc++
 RUN ln -s /usr/lib/librocksdb.so.7 /usr/lib/librocksdb.so
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "monitoring.dll"]
+RUN dotnet publish "monitoring.csproj" -c Release -o /app/publish
+ENTRYPOINT ["dotnet", "/app/publish/monitoring.dll"]

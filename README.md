@@ -115,11 +115,14 @@ Window : Start time : 12/07/2022 08:40:00 | End time : 12/07/2022 08:45:00
 
 # EXAMPLE MONITORING
 
+TODO : refaire store key/value metrics + dashboard librdkafka metrics + voir pourquoi open telemtry plante (lance en debug)
+
 curl -s -X PUT \
       -H "Content-Type: application/json" \
       --data '{
                 "connector.class": "io.confluent.kafka.connect.datagen.DatagenConnector",
                 "kafka.topic": "input",
+                "max.interval": 5,
                 "quickstart": "pageviews",
                 "tasks.max": "1",
                 "transforms": "ValueToKey,ExtractField",
