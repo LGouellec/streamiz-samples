@@ -1,0 +1,11 @@
+---
+version: '3.5'
+services:
+  sum-steamiz-app:
+    build: ../src/sum/
+    container_name: sum-steamiz
+    hostname: sum-steamiz
+    environment:
+      - KAFKA_BOOTSTRAP_SERVER=broker:29092
+    depends_on:
+      - broker
