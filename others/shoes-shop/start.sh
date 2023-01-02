@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "${red}Stop and remove all docker container existing${reset}"
+echo "Stop and remove all docker container existing"
 docker rm -f $(docker ps -aq) > /dev/null 2>&1
 
 # Build images
@@ -20,6 +20,8 @@ docker exec ${kafkaContainerId} kafka-topics --bootstrap-server broker:29092 --t
 
 # Start the rest of the stack
 docker-compose -f "docker-compose.yml" up -d
+
+echo "🚀 The deployment is complete. Please run the ./start-connectors.sh .. "
 
 # Consume output records
 docker exec ${kafkaContainerId} kafka-console-consumer --bootstrap-server broker:29092 --topic orders-enriched --property print.key=true --value-deserializer org.apache.kafka.connect.json.JsonDeserializer
