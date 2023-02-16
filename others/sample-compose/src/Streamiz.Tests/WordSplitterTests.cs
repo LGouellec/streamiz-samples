@@ -1,5 +1,6 @@
 namespace Streamiz.Tests;
 
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Streamiz.Demo.Infrastructure;
 using Streamiz.Demo.KStream;
@@ -18,40 +19,43 @@ public class WordSplitterTests
         this.output = output;
     }
 
-    private void TestKStream(Action<StreamBuilder> configureTopology, Action<TopologyTestDriver> test)
+    private TopologyTestDriver CreateTestTopology(Action<StreamBuilder> configureTopology, [CallerMemberName] string? name = null)
     {
+        var appId = $"{GetType().Name}.{name}";
         StreamConfig config = new StreamConfig
         {
             ApplicationId = GetType().Name,
             SchemaRegistryUrl = "mock://test",
             AutoRegisterSchemas = true,
-            Logger = LoggerFactory.Create(c => c.AddProvider(new TestOutputLoggerProvider(output)))
+            Logger = LoggerFactory.Create(c => c.AddProvider(new TestOutputLoggerProvider(output))),
+            StateDir = "KStreamTestState-" + appId
         };
 
+        if (Directory.Exists(config.StateDir))
+        {
+            Directory.Delete(config.StateDir, true);
+        }
+        
         var builder = new StreamBuilder();
         configureTopology(builder);
 
-        var driver = new TopologyTestDriver(builder.Build(), config);
-        test(driver);
+        return new TopologyTestDriver(builder.Build(), config);
     }
 
     [Fact]
     public void TestTopol()
     {
-        TestKStream(
-            configureTopology: WordSplitter.ConfigureTopology,
-            test: driver =>
-            {
-                var input = driver.CreateInputTopic<string, string, StringSerDes, StringSerDes>("input");
-                var output = driver.CreateOuputTopic<string, DemoValue, StringSerDes, AvroSerDes<DemoValue>>("output");
+        var topology = CreateTestTopology(WordSplitter.ConfigureTopology);
 
-                var message = "this is a test";
-                var expectedWords = new[] { "THIS", "IS", "A", "TEST" };
-                input.PipeInput(message);
-                var values = output.ReadValueList().ToArray();
-                values.Should().HaveCount(1);
-                values[0].Input.Should().Be(message);
-                values[0].ToUpperWords.Should().BeEquivalentTo(expectedWords);
-            });
+        var input = topology.CreateInputTopic<string, string, StringSerDes, StringSerDes>("input");
+        var output = topology.CreateOuputTopic<string, DemoValue, StringSerDes, AvroSerDes<DemoValue>>("output");
+
+        var message = "this is a test";
+        var expectedWords = new[] { "THIS", "IS", "A", "TEST" };
+        input.PipeInput(message);
+        var values = output.ReadValueList().ToArray();
+        values.Should().HaveCount(1);
+        values[0].Input.Should().Be(message);
+        values[0].ToUpperWords.Should().BeEquivalentTo(expectedWords);
     }
 }
