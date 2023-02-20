@@ -34,7 +34,7 @@ public class WordSplitterTests
         {
             Directory.Delete(config.StateDir, true);
         }
-
+        
         var builder = new StreamBuilder();
         configureTopology(builder);
 
