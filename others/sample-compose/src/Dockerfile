@@ -1,13 +1,17 @@
 # runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS base
 
 # install rocks db dependencies
-RUN echo "deb http://ftp.us.debian.org/debian stretch main contrib non-free" >> /etc/apt/sources.list
-RUN apt update
-RUN apt install -y libc6-dev bzip2 lz4 librocksdb-dev
+RUN apk add --no-cache rocksdb=7.7.3-r0 libstdc++
+RUN ln -s /usr/lib/librocksdb.so.7 /usr/lib/librocksdb.so
 
 # Build image
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
+
+# install rocks db dependencies
+RUN apk add --no-cache rocksdb=7.7.3-r0 libstdc++
+RUN ln -s /usr/lib/librocksdb.so.7 /usr/lib/librocksdb.so
+
 WORKDIR /source
 
 # copy sln and csproj for restore
