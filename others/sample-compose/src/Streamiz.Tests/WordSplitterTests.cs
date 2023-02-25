@@ -12,23 +12,22 @@ using Xunit.Abstractions;
 
 public class WordSplitterTests
 {
-    private readonly ITestOutputHelper output;
+    private readonly TestOutputLoggerProvider outputProvider;
 
     public WordSplitterTests(ITestOutputHelper output)
     {
-        this.output = output;
+        this.outputProvider = new TestOutputLoggerProvider(output);
     }
 
     private TopologyTestDriver CreateTestTopology(Action<StreamBuilder> configureTopology, [CallerMemberName] string? name = null)
     {
-        var appId = $"{GetType().Name}.{name}";
         StreamConfig config = new StreamConfig
         {
-            ApplicationId = GetType().Name,
+            ApplicationId = $"{GetType().Name}",
             SchemaRegistryUrl = "mock://test",
             AutoRegisterSchemas = true,
-            Logger = LoggerFactory.Create(c => c.AddProvider(new TestOutputLoggerProvider(output))),
-            StateDir = "KStreamTestState-" + appId
+            Logger = LoggerFactory.Create(c => c.AddProvider(outputProvider)),
+            StateDir = "KStreamTestState-" + name
         };
 
         if (Directory.Exists(config.StateDir))
@@ -45,17 +44,29 @@ public class WordSplitterTests
     [Fact]
     public void TestTopol()
     {
-        var topology = CreateTestTopology(WordSplitter.ConfigureTopology);
+        using var topology = CreateTestTopology(WordSplitter.ConfigureTopology);
 
         var input = topology.CreateInputTopic<string, string, StringSerDes, StringSerDes>("input");
         var output = topology.CreateOuputTopic<string, DemoValue, StringSerDes, AvroSerDes<DemoValue>>("output");
 
         var message = "this is a test";
-        var expectedWords = new[] { "THIS", "IS", "A", "TEST" };
-        input.PipeInput(message);
-        var values = output.ReadValueList().ToArray();
-        values.Should().HaveCount(1);
-        values[0].Input.Should().Be(message);
-        values[0].ToUpperWords.Should().BeEquivalentTo(expectedWords);
+        var expectation = new DemoValue
+        {
+            Input = message,
+            ToUpperWords = new[] { "THIS", "IS", "A", "TEST" }
+        };
+
+        input.PipeInput("key", message);
+
+        output
+            .ReadValueList()
+            .Should().HaveCount(1)
+            .And.SatisfyRespectively(
+                v => v.Should().BeEquivalentTo(expectation));
+
+        topology
+            .GetKeyValueStore<string, string>("store_demo")
+            .Get("key")
+            .Should().Be(string.Join(" ", expectation.ToUpperWords));
     }
 }

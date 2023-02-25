@@ -5,6 +5,7 @@ using Streamiz.Demo.Infrastructure;
 using Streamiz.Demo.KStream.Models;
 using Streamiz.Kafka.Net;
 using Streamiz.Kafka.Net.SerDes;
+using Streamiz.Kafka.Net.Table;
 
 public class WordSplitter : BackgroundService
 {
@@ -41,5 +42,13 @@ public class WordSplitter : BackgroundService
             .Stream<string, string, StringSerDes, StringSerDes>("input")
             .MapValues(DemoValue.FromString)
             .To<StringSerDes, AvroSerDes<DemoValue>>("output");
+
+        builder
+            .Stream<string, DemoValue, StringSerDes, AvroSerDes<DemoValue>>("output")
+            .GroupByKey()
+            .Aggregate(
+                initializer: () => "",
+                aggregator: (k, v, agg) => agg + string.Join(" ", v.ToUpperWords!),
+                materialized: RocksDb.As<string, string, StringSerDes, StringSerDes>("store_demo"));
     }
 }
