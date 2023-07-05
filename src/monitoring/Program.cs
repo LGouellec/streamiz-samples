@@ -2,9 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Streamiz.Kafka.Net;
-using Streamiz.Kafka.Net.Metrics.OpenTelemetry;
+using Streamiz.Kafka.Net.Metrics.Prometheus;
 using Streamiz.Kafka.Net.SerDes;
-using OpenTelemetry.Metrics;
 using Streamiz.Kafka.Net.Stream;
 using Streamiz.Kafka.Net.Table;
 using System.Reflection;
@@ -43,20 +42,8 @@ namespace monitoring
             // Where to find Kafka broker(s).
             config.BootstrapServers = boostrapserver;
             config.CommitIntervalMs = 10 * 1000;
-            config.UseOpenTelemetryReporter((builder) =>
-            {
-                builder.AddPrometheusExporter((options) =>
-                {
-                    options.StartHttpListener = true;
-                    //Workaround for docker env : https://github.com/open-telemetry/opentelemetry-dotnet/issues/2840
-                    options.GetType()
-                        ?.GetField("httpListenerPrefixes", BindingFlags.NonPublic | BindingFlags.Instance)
-                        ?.SetValue(options, new[] { "http://*:9099" });
-                    // Use your endpoint and port here
-                    //options.HttpListenerPrefixes = new string[] {$"http://localhost:{9099}/"};
-                    options.ScrapeResponseCacheDurationMilliseconds = 0;
-                });
-            }, true);
+            config.UsePrometheusReporter(9099, true);
+            
             config.MetricsRecording = Streamiz.Kafka.Net.Metrics.MetricsRecordingLevel.DEBUG;
 
             Topology t = GetTopology();
