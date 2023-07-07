@@ -1,4 +1,7 @@
-﻿using com.dotnet.samples.avro;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using com.dotnet.samples.avro;
 using Streamiz.Kafka.Net;
 using Streamiz.Kafka.Net.SchemaRegistry.SerDes.Avro;
 using Streamiz.Kafka.Net.SerDes;

@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "global-ktable", "src\global
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "monitoring", "src\monitoring\monitoring.csproj", "{C46A75BD-8B8D-46C8-BD1F-F9A221D72443}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "de-duplication", "src\de-duplication\de-duplication.csproj", "{626BA526-560A-46D8-8217-C87FFC6D559C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{C46A75BD-8B8D-46C8-BD1F-F9A221D72443}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C46A75BD-8B8D-46C8-BD1F-F9A221D72443}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C46A75BD-8B8D-46C8-BD1F-F9A221D72443}.Release|Any CPU.Build.0 = Release|Any CPU
+		{626BA526-560A-46D8-8217-C87FFC6D559C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{626BA526-560A-46D8-8217-C87FFC6D559C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{626BA526-560A-46D8-8217-C87FFC6D559C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{626BA526-560A-46D8-8217-C87FFC6D559C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
