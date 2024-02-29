@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Streamiz.Kafka.Net" Version="1.5.0-RC1" />
+      <PackageReference Include="Streamiz.Kafka.Net" Version="1.5.1" />
     </ItemGroup>
 
 </Project>
