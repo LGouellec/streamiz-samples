@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Streamiz.Kafka.Net" Version="1.5.1" />
-      <PackageReference Include="Streamiz.Kafka.Net.SchemaRegistry.SerDes.Avro" Version="1.5.1" />
+      <PackageReference Include="Streamiz.Kafka.Net" Version="1.6.0-RC2" />
+      <PackageReference Include="Streamiz.Kafka.Net.SchemaRegistry.SerDes.Avro" Version="1.6.0-RC2" />
     </ItemGroup>
 
 </Project>
