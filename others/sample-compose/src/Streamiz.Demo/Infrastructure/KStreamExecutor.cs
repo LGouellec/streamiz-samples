@@ -1,7 +1,7 @@
-namespace Streamiz.Demo.Infrastructure;
-
 using Confluent.Kafka;
 using Streamiz.Kafka.Net;
+
+namespace Streamiz.Demo.Infrastructure;
 
 public class KStreamHelper
 {

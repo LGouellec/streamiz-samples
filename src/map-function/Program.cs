@@ -33,7 +33,7 @@ namespace map_function
             // Read the input Kafka topic into a KStream instance
             var textLines = builder.Stream<byte[], string>("text-lines-topic");
             // Variant 1: using `MapValues`
-            var upperCase = textLines.MapValues(v => v.ToUpper());
+            var upperCase = textLines.MapValues((v, context) => v.ToUpper());
 
             // Write (i.e. persist) the results to a new Kafka topic called "UppercasedTextLinesTopic".
             // In this case we can rely on the default serializers for keys and values because their data
@@ -41,14 +41,14 @@ namespace map_function
             upperCase.To("uppercased-text-lines-topic");
 
             // Variant 2: using `map`, modify value only (equivalent to variant 1)
-            var uppercasedWithMap = textLines.Map((key, value) => KeyValuePair.Create(key, value.ToUpper()));
+            var uppercasedWithMap = textLines.Map((key, value, context) => KeyValuePair.Create(key, value.ToUpper()));
 
             // Variant 3: using `map`, modify both key and value
             //
             // Note: Whether, in general, you should follow this artificial example and store the original
             //       value in the key field is debatable and depends on your use case.  If in doubt, don't
             //       do it.
-            var originalAndUppercased = textLines.Map((key, value) => KeyValuePair.Create(value, value.ToUpper()));
+            var originalAndUppercased = textLines.Map((key, value, context) => KeyValuePair.Create(value, value.ToUpper()));
 
             // Write the results to a new Kafka topic "OriginalAndUppercasedTopic".
             //

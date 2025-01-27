@@ -2,14 +2,16 @@
 FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS base
 
 # install rocks db dependencies
-RUN apk add --no-cache rocksdb=7.7.3-r0 libstdc++
+RUN apk add librdkafka --repository=https://dl-cdn.alpinelinux.org/alpine/v3.21/community/
+RUN apk add --no-cache rocksdb libstdc++
 RUN ln -s /usr/lib/librocksdb.so.7 /usr/lib/librocksdb.so
 
 # Build image
 FROM mcr.microsoft.com/dotnet/sdk:7.0-alpine AS build
 
 # install rocks db dependencies
-RUN apk add --no-cache rocksdb=7.7.3-r0 libstdc++
+RUN apk add librdkafka --repository=https://dl-cdn.alpinelinux.org/alpine/v3.21/community/
+RUN apk add --no-cache rocksdb libstdc++
 RUN ln -s /usr/lib/librocksdb.so.7 /usr/lib/librocksdb.so
 
 WORKDIR /source
@@ -35,12 +37,16 @@ RUN dotnet test --no-restore
 # publish the app
 WORKDIR /source/Streamiz.Demo
 RUN dotnet publish --no-restore -c Release -o ../out
+RUN ls -al ../out
 
 FROM base as final
 
 # copy published app from build image
 WORKDIR /app
 COPY --from=build /source/out .
+
+# Workaround https://github.com/confluentinc/librdkafka/issues/4897
+RUN cp /usr/lib/librdkafka.so.1 /app/alpine-librdkafka.so
 
 # that's all folks
 EXPOSE 8060

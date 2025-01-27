@@ -15,7 +15,10 @@ RUN dotnet publish "streamiz-app.csproj" -c Release -o /app/publish
 FROM base AS final
 ARG ROCKSDB_VERSION=v7.4.3
 WORKDIR /app
+RUN apk add librdkafka --repository=https://dl-cdn.alpinelinux.org/alpine/v3.21/community/
 RUN apk add --no-cache rocksdb libstdc++
 RUN ln -s /usr/lib/librocksdb.so.7 /usr/lib/librocksdb.so
+# Workaround https://github.com/confluentinc/librdkafka/issues/4897
+RUN cp /usr/lib/librdkafka.so.1 /app/alpine-librdkafka.so
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "streamiz-app.dll"]

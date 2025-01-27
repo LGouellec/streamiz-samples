@@ -68,7 +68,7 @@ namespace de_duplication
             );
          
             builder.Stream(INPUT_TOPIC, new StringSerDes(), new JsonSerDes<MappedEventValue>())
-                .SelectKey((k,v) => v.FinalKey)
+                .SelectKey((k,v, context) => v.FinalKey)
                 .Repartition()
                 .Transform(new TransformerBuilder<string, MappedEventValue, string, MappedEventValue>()
                     .StateStore(dedupStoreBuilder)

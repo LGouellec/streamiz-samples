@@ -1,0 +1,10 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;
+  &lt;Assembly Path="/Users/sylvainlegouellec/.nuget/packages/confluent.schemaregistry.serdes.avro/2.6.1/lib/net6.0/Confluent.SchemaRegistry.Serdes.Avro.dll" /&gt;
+  &lt;Assembly Path="/Users/sylvainlegouellec/.nuget/packages/streamiz.kafka.net/1.7.0/lib/net7.0/Streamiz.Kafka.Net.dll" /&gt;
+  &lt;Assembly Path="/Users/sylvainlegouellec/.nuget/packages/opentelemetry.exporter.opentelemetryprotocol/1.11.1/lib/netstandard2.1/OpenTelemetry.Exporter.OpenTelemetryProtocol.dll" /&gt;
+  &lt;Assembly Path="/Users/sylvainlegouellec/.nuget/packages/opentelemetry.exporter.console/1.11.1/lib/netstandard2.0/OpenTelemetry.Exporter.Console.dll" /&gt;
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=4589fd25_002D257d_002D435c_002Da85d_002D0b2e994b536f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;Streamiz.Tests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;Project Location="/Users/sylvainlegouellec/repos/kafka-streams-dotnet-samples/others/sample-compose/src/Streamiz.Tests" Presentation="&amp;lt;Streamiz.Tests&amp;gt;" /&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

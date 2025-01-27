@@ -59,10 +59,10 @@ namespace page_view_region
 
             var viewsByUser = builder
                 .Stream<string, PageView, StringSerDes, SchemaAvroSerDes<PageView>>(PAGE_VIEW_TOPIC)
-                .SelectKey((k, v) => v.user);
+                .SelectKey((k, v, context) => v.user);
 
             var userRegions = builder.Stream<string, UserProfile, StringSerDes, SchemaAvroSerDes<UserProfile>>(USER_PROFILE_TOPIC)
-                .MapValues((v) => v.region)
+                .MapValues((v, context) => v.region)
                 .ToTable(
                     InMemory.As<string, string>($"{USER_PROFILE_TOPIC}-store")
                     .WithValueSerdes<StringSerDes>()
@@ -75,14 +75,14 @@ namespace page_view_region
                     user = view.user,
                     region = region
                 })
-                .Map((user, viewRegion) => KeyValuePair.Create(viewRegion.region, viewRegion))
+                .Map((user, viewRegion, context) => KeyValuePair.Create(viewRegion.region, viewRegion))
                 .GroupByKey<StringSerDes, JsonSerDes<ViewRegion>>()
                 .WindowedBy(TumblingWindowOptions.Of(TimeSpan.FromMinutes(5)))
                 .Count();
             
             viewsByRegion
                 .ToStream()
-                .Map((w, c) => KeyValuePair.Create(w.ToString(), c.ToString()))
+                .Map((w, c, context) => KeyValuePair.Create(w.ToString(), c.ToString()))
                 .To<StringSerDes, StringSerDes>(PAGE_VIEW_REGION_TOPIC);
 
             return builder.Build();

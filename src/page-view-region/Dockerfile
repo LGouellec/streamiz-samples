@@ -15,6 +15,10 @@ RUN dotnet publish "page-view-region.csproj" -c Release -o /app/publish
 FROM base AS final
 ARG ROCKSDB_VERSION=v7.4.3
 WORKDIR /app
+RUN apk add librdkafka --repository=https://dl-cdn.alpinelinux.org/alpine/v3.21/community/
+
+# Workaround https://github.com/confluentinc/librdkafka/issues/4897
+RUN cp /usr/lib/librdkafka.so.1 /app/alpine-librdkafka.so
 RUN apk add --no-cache rocksdb libstdc++
 RUN ln -s /usr/lib/librocksdb.so.7 /usr/lib/librocksdb.so
 COPY --from=publish /app/publish .

@@ -1,5 +1,3 @@
-namespace Streamiz.Demo.Infrastructure;
-
 using Chr.Avro.Confluent;
 using Confluent.SchemaRegistry;
 using Confluent.SchemaRegistry.Serdes;
@@ -8,14 +6,16 @@ using Streamiz.Kafka.Net.Errors;
 using Streamiz.Kafka.Net.SchemaRegistry.SerDes;
 using Streamiz.Kafka.Net.SerDes;
 
-public class AvroSerDes<T> : SchemaSerDes<T, AvroSerializerConfig>
+namespace Streamiz.Demo.Infrastructure;
+
+public class AvroSerDes<T> : SchemaSerDes<T, AvroSerializerConfig, AvroDeserializerConfig>
 {
     public AvroSerDes() :
         base("avro")
     {
     }
 
-    protected override SchemaRegistryConfig GetConfig(ISchemaRegistryConfig config)
+    protected override SchemaRegistryConfig GetConfig(ISchemaRegistryConfig config, IStreamConfig streamConfig)
     {
         var c = new SchemaRegistryConfig
         {
@@ -37,9 +37,23 @@ public class AvroSerDes<T> : SchemaSerDes<T, AvroSerializerConfig>
             c.BasicAuthUserInfo = config.BasicAuthUserInfo;
         }
 
-        if (config.BasicAuthCredentialsSource.HasValue)
+        if (!string.IsNullOrEmpty(config.BasicAuthCredentialsSource) && 
+            Enum.TryParse(config.BasicAuthCredentialsSource, out AuthCredentialsSource credentialsSource))
         {
-            c.BasicAuthCredentialsSource = (AuthCredentialsSource)config.BasicAuthCredentialsSource.Value;
+            c.BasicAuthCredentialsSource = credentialsSource;
+        }
+
+        var explicitStreamConfig = streamConfig.GetPrefixScan("schema.registry.");
+        foreach (var kv in explicitStreamConfig)
+        {
+            try
+            {
+                c.Set(kv.Key, kv.Value);
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         return c;
@@ -59,7 +73,7 @@ public class AvroSerDes<T> : SchemaSerDes<T, AvroSerializerConfig>
 
         if (context.Config is ISchemaRegistryConfig schemaConfig)
         {
-            registryClient = GetSchemaRegistryClient(GetConfig(schemaConfig));
+            registryClient = GetSchemaRegistryClient(GetConfig(schemaConfig, context.Config));
             deserializer = new AsyncSchemaRegistryDeserializer<T>(registryClient);
 
             AutomaticRegistrationBehavior autoRegisterSchemas =

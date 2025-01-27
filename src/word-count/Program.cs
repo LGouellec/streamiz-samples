@@ -56,18 +56,18 @@ namespace word_count
               // Split each text line, by whitespace, into words.  The text lines are the record
               // values, i.e. we can ignore whatever data is in the record keys and thus invoke
               // `flatMapValues()` instead of the more generic `flatMap()`.
-              .FlatMapValues(value => value.ToLower().Split(" "))
+              .FlatMapValues((value, c) => value.ToLower().Split(" "))
               // Group the split data by word so that we can subsequently count the occurrences per word.
               // This step re-keys (re-partitions) the input data, with the new record key being the words.
               // Note: No need to specify explicit serdes because the resulting key and value types
               // (String and String) match the application's default serdes.
-              .GroupBy((k, w) => w)
+              .GroupBy((k, w, c) => w)
               // Count the occurrences of each word (record key).
               .Count();
 
             // Write the `KTable<String, Long>` to the output topic.
             wordCounts.ToStream()
-                .MapValues((t) => t.ToString())
+                .MapValues((t, c) => t.ToString())
                 .To(outputTopic);
 
             return builder.Build();

@@ -54,13 +54,13 @@ namespace sum
             IKStream<byte[], string> input = builder.Stream<byte[], string, ByteArraySerDes, StringSerDes>(NUMBERS_TOPIC);
 
             IKTable<int, int> sumOfOddNumbers = input
-             .MapValues((v) => Int32.Parse(v))
+             .MapValues((v, c) => Int32.Parse(v))
              // We want to compute the total sum across ALL numbers, so we must re-key all records to the
              // same key.  This re-keying is required because in Kafka Streams a data record is always a
              // key-value pair, and KStream aggregations such as `reduce` operate on a per-key basis.
              // The actual new key (here: `1`) we pick here doesn't matter as long it is the same across
              // all records.
-             .SelectKey((k, v) => 1)
+             .SelectKey((k, v, c) => 1)
              // no need to specify explicit serdes because the resulting key and value types match our default serde settings
              .GroupByKey()
              // Add the numbers to compute the sum.
@@ -68,7 +68,7 @@ namespace sum
 
             sumOfOddNumbers
                 .ToStream()
-                .Map((k, v) => KeyValuePair.Create(k.ToString(), v.ToString()))
+                .Map((k, v, c) => KeyValuePair.Create(k.ToString(), v.ToString()))
                 .To<StringSerDes, StringSerDes>(SUM_OF_ODD_NUMBERS_TOPIC);
 
             return builder.Build();
